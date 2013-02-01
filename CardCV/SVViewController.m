@@ -9,6 +9,10 @@
 #import "SVViewController.h"
 
 @interface SVViewController ()
+{
+    IBOutlet UIImageView* imageView;
+    IBOutlet UIButton* button;
+}
 
 @end
 
@@ -24,6 +28,11 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)actionStart:(id)sender
+{
+    
 }
 
 @end

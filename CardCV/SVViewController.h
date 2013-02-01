@@ -10,4 +10,6 @@
 
 @interface SVViewController : UIViewController
 
+- (IBAction)actionStart:(id)sender;
+
 @end

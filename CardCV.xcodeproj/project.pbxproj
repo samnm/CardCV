@@ -18,7 +18,7 @@
 		22B1E8AF16BC78B000CF0D1F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 22B1E8AE16BC78B000CF0D1F /* Default-568h@2x.png */; };
 		22B1E8B216BC78B000CF0D1F /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22B1E8B016BC78B000CF0D1F /* MainStoryboard.storyboard */; };
 		22B1E8B516BC78B000CF0D1F /* SVViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22B1E8B416BC78B000CF0D1F /* SVViewController.m */; };
-		22B1E8BC16BC78D300CF0D1F /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B1E8BB16BC78D300CF0D1F /* opencv2.framework */; };
+		22B1E8BE16BC7AA100CF0D1F /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B1E8BD16BC7AA100CF0D1F /* opencv2.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,7 +38,7 @@
 		22B1E8B116BC78B000CF0D1F /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
 		22B1E8B316BC78B000CF0D1F /* SVViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SVViewController.h; sourceTree = "<group>"; };
 		22B1E8B416BC78B000CF0D1F /* SVViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SVViewController.m; sourceTree = "<group>"; };
-		22B1E8BB16BC78D300CF0D1F /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
+		22B1E8BD16BC7AA100CF0D1F /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,7 +49,7 @@
 				22B1E89916BC78AF00CF0D1F /* UIKit.framework in Frameworks */,
 				22B1E89B16BC78B000CF0D1F /* Foundation.framework in Frameworks */,
 				22B1E89D16BC78B000CF0D1F /* CoreGraphics.framework in Frameworks */,
-				22B1E8BC16BC78D300CF0D1F /* opencv2.framework in Frameworks */,
+				22B1E8BE16BC7AA100CF0D1F /* opencv2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,7 +76,7 @@
 		22B1E89716BC78AF00CF0D1F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				22B1E8BB16BC78D300CF0D1F /* opencv2.framework */,
+				22B1E8BD16BC7AA100CF0D1F /* opencv2.framework */,
 				22B1E89816BC78AF00CF0D1F /* UIKit.framework */,
 				22B1E89A16BC78AF00CF0D1F /* Foundation.framework */,
 				22B1E89C16BC78B000CF0D1F /* CoreGraphics.framework */,
