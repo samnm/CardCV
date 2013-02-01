@@ -8,6 +8,7 @@
 
 #import "SVViewController.h"
 #import <opencv2/highgui/cap_ios.h>
+using namespace cv;
 
 @interface SVViewController () <CvVideoCameraDelegate>
 {
@@ -26,7 +27,7 @@
     
     videoCamera = [[CvVideoCamera alloc] initWithParentView:imageView];
     videoCamera.delegate = self;
-    videoCamera.defaultAVCaptureDevicePosition = AVCaptureDevicePositionFront;
+    videoCamera.defaultAVCaptureDevicePosition = AVCaptureDevicePositionBack;
     videoCamera.defaultAVCaptureSessionPreset = AVCaptureSessionPreset352x288;
     videoCamera.defaultAVCaptureVideoOrientation = AVCaptureVideoOrientationPortrait;
     videoCamera.defaultFPS = 30;
@@ -41,7 +42,7 @@
 
 - (void)actionStart:(id)sender
 {
-    
+    [videoCamera start];
 }
 
 #pragma mark - Protocol CvVideoCameraDelegate
@@ -49,7 +50,12 @@
 #ifdef __cplusplus
 - (void)processImage:(Mat&)image;
 {
-    // Do some OpenCV stuff with the image
+    Mat image_copy;
+    cvtColor(image, image_copy, CV_BGRA2BGR);
+    
+    // invert image
+    bitwise_not(image_copy, image_copy);
+    cvtColor(image_copy, image, CV_BGR2BGRA);
 }
 #endif
 
