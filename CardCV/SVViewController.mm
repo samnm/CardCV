@@ -15,7 +15,7 @@ using namespace cv;
 void DetectAndDrawQuads(Mat src)
 {
     Mat src_gray;
-    int thresh = 100;
+    int thresh = 50;
     RNG rng(12345);
     
     // Convert image to gray and blur it
@@ -24,6 +24,7 @@ void DetectAndDrawQuads(Mat src)
     
     Mat canny_output;
     vector<vector<cv::Point> > contours;
+    vector<cv::Point> approx;
     vector<Vec4i> hierarchy;
     
     /// Detect edges using canny
@@ -33,12 +34,12 @@ void DetectAndDrawQuads(Mat src)
     findContours( canny_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
     
     /// Draw contours
-//    Mat drawing = Mat::zeros( canny_output.size(), CV_8UC3 );
     for( int i = 0; i< contours.size(); i++ )
     {
         Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-//        drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, cv::Point() );
-        drawContours( src, contours, i, color, 2, 8, hierarchy, 0, cv::Point() );
+        approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.02, true);
+        if( approx.size() == 4 && fabs(contourArea(Mat(approx))) > 10000 && isContourConvex(Mat(approx)))
+            drawContours( src, contours, i, color, 2, 8, hierarchy, 0, cv::Point() );
     }
     
     contours.clear();
