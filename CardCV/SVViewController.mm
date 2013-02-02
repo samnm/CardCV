@@ -64,10 +64,22 @@
 #pragma mark - Protocol CvVideoCameraDelegate
 
 #ifdef __cplusplus
+using namespace cv;
 
-- (void)processImage:(cv::Mat&)imageMat;
+- (void)processImage:(Mat&)image;
 {
+    Mat dst, cdst;
+    Canny(image, dst, 50, 200, 3);
+    cvtColor(dst, cdst, CV_GRAY2BGR);
     
+    vector<Vec4i> lines;
+    HoughLinesP(dst, lines, CV_HOUGH_GRADIENT, CV_PI/180, 50, 50, 10 );
+    for( size_t i = 0; i < lines.size(); i++ )
+    {
+        Vec4i l = lines[i];
+        line( cdst, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), Scalar(0,0,255), 1, CV_AA);
+    }
+    image = cdst;
 }
 
 #endif
