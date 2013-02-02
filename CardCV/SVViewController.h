@@ -11,5 +11,6 @@
 @interface SVViewController : UIViewController
 
 - (IBAction)actionStart:(id)sender;
+- (IBAction)clearImage:(id)sender;
 
 @end

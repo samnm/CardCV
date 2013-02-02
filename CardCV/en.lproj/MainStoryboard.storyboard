@@ -12,7 +12,16 @@
                         <rect key="frame" x="0.0" y="20" width="320" height="548"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hWf-3Q-bWr"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hWf-3Q-bWr" userLabel="Video Image View">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="265" id="1cZ-en-NMV"/>
+                                </constraints>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="U7H-Nj-Lrw" userLabel="Card Image View">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="286" id="1Zk-zO-eZG"/>
+                                </constraints>
+                            </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fAY-qK-ZMl">
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <state key="normal" title="Start">
@@ -26,19 +35,37 @@
                                     <action selector="actionStart:" destination="2" eventType="touchUpInside" id="ATe-Ij-KGh"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qta-hp-wEu">
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                <state key="normal" title="Reset">
+                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <state key="highlighted">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="clearImage:" destination="2" eventType="touchUpInside" id="16X-zy-4fD"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="fAY-qK-ZMl" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="97" id="6RM-4y-PxK"/>
+                            <constraint firstItem="U7H-Nj-Lrw" firstAttribute="trailing" secondItem="3" secondAttribute="trailing" type="default" id="JZ4-Pl-C6K"/>
                             <constraint firstItem="hWf-3Q-bWr" firstAttribute="trailing" secondItem="3" secondAttribute="trailing" type="default" id="Lah-du-kzI"/>
-                            <constraint firstAttribute="bottom" secondItem="fAY-qK-ZMl" secondAttribute="bottom" constant="11" id="QQC-mB-wPb"/>
-                            <constraint firstItem="fAY-qK-ZMl" firstAttribute="centerX" secondItem="hWf-3Q-bWr" secondAttribute="centerX" type="default" id="W7y-pH-88o"/>
-                            <constraint firstItem="hWf-3Q-bWr" firstAttribute="bottom" secondItem="3" secondAttribute="bottom" type="default" id="cf1-lp-2Dx"/>
+                            <constraint firstAttribute="bottom" secondItem="fAY-qK-ZMl" secondAttribute="bottom" constant="12" id="Noa-5g-MB8"/>
+                            <constraint firstItem="U7H-Nj-Lrw" firstAttribute="leading" secondItem="3" secondAttribute="leading" type="default" id="bvw-3Q-maY"/>
+                            <constraint firstItem="U7H-Nj-Lrw" firstAttribute="bottom" secondItem="3" secondAttribute="bottom" type="default" id="dNJ-KU-aDM"/>
                             <constraint firstItem="hWf-3Q-bWr" firstAttribute="leading" secondItem="3" secondAttribute="leading" type="default" id="kSs-qg-Aas"/>
+                            <constraint firstItem="qta-hp-wEu" firstAttribute="leading" secondItem="fAY-qK-ZMl" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="or9-MF-1Cg"/>
+                            <constraint firstItem="qta-hp-wEu" firstAttribute="baseline" secondItem="fAY-qK-ZMl" secondAttribute="baseline" type="default" id="w1O-M4-DiF"/>
                             <constraint firstItem="hWf-3Q-bWr" firstAttribute="top" secondItem="3" secondAttribute="top" type="default" id="wJj-x2-lyl"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="button" destination="fAY-qK-ZMl" id="4Pr-oo-d6u"/>
+                        <outlet property="cardView" destination="U7H-Nj-Lrw" id="3X9-O0-KuT"/>
                         <outlet property="imageView" destination="hWf-3Q-bWr" id="Qre-lM-iZk"/>
                     </connections>
                 </viewController>
@@ -54,7 +81,9 @@
             <source key="sourceIdentifier" type="project" relativePath="./Classes/SVViewController.h"/>
             <relationships>
                 <relationship kind="action" name="actionStart:"/>
+                <relationship kind="action" name="clearImage:"/>
                 <relationship kind="outlet" name="button" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="cardView" candidateClass="UIImageView"/>
                 <relationship kind="outlet" name="imageView" candidateClass="UIImageView"/>
             </relationships>
         </class>

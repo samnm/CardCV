@@ -26,6 +26,7 @@
 		22B1E8C816BC7C2700CF0D1F /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B1E8C716BC7C2700CF0D1F /* CoreMedia.framework */; };
 		22B1E8CA16BC7C2E00CF0D1F /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B1E8C916BC7C2E00CF0D1F /* CoreVideo.framework */; };
 		22B1E8CC16BC7C3400CF0D1F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B1E8CB16BC7C3400CF0D1F /* QuartzCore.framework */; };
+		22E59DFB16BCA45200ED892C /* UIImage+OpenCV.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22E59DFA16BCA45200ED892C /* UIImage+OpenCV.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +54,8 @@
 		22B1E8C716BC7C2700CF0D1F /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		22B1E8C916BC7C2E00CF0D1F /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		22B1E8CB16BC7C3400CF0D1F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		22E59DF916BCA45200ED892C /* UIImage+OpenCV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+OpenCV.h"; sourceTree = "<group>"; };
+		22E59DFA16BCA45200ED892C /* UIImage+OpenCV.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "UIImage+OpenCV.mm"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +118,7 @@
 		22B1E89E16BC78B000CF0D1F /* CardCV */ = {
 			isa = PBXGroup;
 			children = (
+				22E59DF716BCA42700ED892C /* UIImage+OpenCV */,
 				22B1E8A716BC78B000CF0D1F /* SVAppDelegate.h */,
 				22B1E8A816BC78B000CF0D1F /* SVAppDelegate.m */,
 				22B1E8B016BC78B000CF0D1F /* MainStoryboard.storyboard */,
@@ -137,6 +141,15 @@
 				22B1E8AE16BC78B000CF0D1F /* Default-568h@2x.png */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		22E59DF716BCA42700ED892C /* UIImage+OpenCV */ = {
+			isa = PBXGroup;
+			children = (
+				22E59DF916BCA45200ED892C /* UIImage+OpenCV.h */,
+				22E59DFA16BCA45200ED892C /* UIImage+OpenCV.mm */,
+			);
+			name = "UIImage+OpenCV";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -209,6 +222,7 @@
 				22B1E8A516BC78B000CF0D1F /* main.m in Sources */,
 				22B1E8A916BC78B000CF0D1F /* SVAppDelegate.m in Sources */,
 				22B1E8B516BC78B000CF0D1F /* SVViewController.mm in Sources */,
+				22E59DFB16BCA45200ED892C /* UIImage+OpenCV.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

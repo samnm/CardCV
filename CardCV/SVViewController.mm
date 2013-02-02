@@ -8,11 +8,12 @@
 
 #import "SVViewController.h"
 #import <opencv2/highgui/cap_ios.h>
+#import "UIImage+OpenCV.h"
 
 #ifdef __cplusplus
 using namespace cv;
 
-void DetectAndDrawQuads(Mat src)
+vector<cv::Point> GetCardQuadFromImage(Mat src)
 {
     Mat src_gray;
     int thresh = 50;
@@ -38,18 +39,36 @@ void DetectAndDrawQuads(Mat src)
     {
         Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
         approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.02, true);
-        if( approx.size() == 4 && fabs(contourArea(Mat(approx))) > 10000 && isContourConvex(Mat(approx)))
+        if( approx.size() == 4 && fabs(contourArea(Mat(approx))) > 10000 && isContourConvex(Mat(approx))) {
             drawContours( src, contours, i, color, 2, 8, hierarchy, 0, cv::Point() );
+            return approx;
+        }
     }
     
-    contours.clear();
+    return approx;
+}
+
+cv::Rect pointsToRect(vector<cv::Point> points) {
+    int minX = INT_MAX;
+    int maxX = INT_MIN;
+    int minY = INT_MAX;
+    int maxY = INT_MIN;
+    for (int i = 0; i < points.size(); i++) {
+        minX = MIN(points[i].x, minX);
+        maxX = MAX(points[i].x, maxX);
+        minY = MIN(points[i].y, minY);
+        maxY = MAX(points[i].y, maxY);
+    }
+    return cv::Rect(minX, minY, maxX - minX, maxY - minY);
 }
 #endif
 
 @interface SVViewController () <CvVideoCameraDelegate>
 {
     IBOutlet UIImageView* imageView;
+    IBOutlet UIImageView* cardView;
     IBOutlet UIButton* button;
+    
     CvVideoCamera* videoCamera;
     BOOL isCameraRunning;
 }
@@ -90,15 +109,26 @@ void DetectAndDrawQuads(Mat src)
     }
 }
 
+- (void)clearImage:(id)sender
+{
+    cardView.image = nil;
+}
+
 #pragma mark - Protocol CvVideoCameraDelegate
 
 #ifdef __cplusplus
-- (void)processImage:(Mat&)image;
+
+- (void)processImage:(Mat&)imageMat;
 {
-    Mat image_copy;
-    cvtColor(image, image_copy, CV_BGRA2BGR);
-    
-    DetectAndDrawQuads(image);
+    vector<cv::Point> cardPoints = GetCardQuadFromImage(imageMat);
+    if (cardPoints.size() == 4 && cardView.image == nil) {
+        cv::Rect rect = pointsToRect(cardPoints);
+        Mat cardRaw = imageMat(rect);
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            cardView.image = [UIImage imageWithCVMat:cardRaw];
+        });
+    }
 }
 #endif
 
