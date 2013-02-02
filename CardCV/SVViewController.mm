@@ -81,10 +81,13 @@ void DetectAndDrawQuads(Mat src)
 {
     isCameraRunning = !isCameraRunning;
     
-    if (isCameraRunning)
+    if (isCameraRunning) {
         [videoCamera start];
-    else
+        [button setTitle:@"Stop" forState:UIControlStateNormal];
+    } else {
         [videoCamera stop];
+        [button setTitle:@"Start" forState:UIControlStateNormal];
+    }
 }
 
 #pragma mark - Protocol CvVideoCameraDelegate
