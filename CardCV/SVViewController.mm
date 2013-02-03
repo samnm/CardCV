@@ -18,6 +18,8 @@
     
     CvVideoCamera* videoCamera;
     BOOL isCameraRunning;
+    
+    int hasLines[4];
 }
 
 @end
@@ -59,6 +61,7 @@
 - (void)clearImage:(id)sender
 {
     cardView.image = nil;
+    for (int i = 0; i < 4; i++) hasLines[i] = 0;
 }
 
 #pragma mark - Protocol CvVideoCameraDelegate
@@ -66,19 +69,104 @@
 #ifdef __cplusplus
 using namespace cv;
 
+BOOL isAngleInRange(float angle, float min, float max) {
+    if (min < 0) {
+        min += 360;
+        max += 360;
+        angle += 360;
+    }
+    return (angle >= min && angle <= max);
+}
+
+BOOL isAngleNear(float angle, float target) {
+    return isAngleInRange(angle, target - 15, target + 15);
+}
+
+BOOL isPositionNear(int pos, int target) {
+    return (pos >= target - 10 && pos <= target + 10);
+}
+
+BOOL isLineNearX(Vec4i line, int target) {
+    float x = (line[0] + line[2])/2;
+    return isPositionNear(x, target);
+}
+
+BOOL isLineNearY(Vec4i line, int target) {
+    float y = (line[1] + line[3])/2;
+    return isPositionNear(y, target);
+}
+
 - (void)processImage:(Mat&)image;
 {
     Mat dst, cdst;
-    Canny(image, dst, 50, 200, 3);
+    Canny(image, dst, 50, 100, 3);
     cvtColor(dst, cdst, CV_GRAY2BGR);
     
     vector<Vec4i> lines;
-    HoughLinesP(dst, lines, CV_HOUGH_GRADIENT, CV_PI/180, 50, 50, 10 );
+//  HoughLinesP(dst, lines, rho, theta, threshold, minLineLength=0, maxLineGap=0
+    HoughLinesP(dst, lines, 1, CV_PI/180, 50, 50, 10 );
+    
+    int left = 8;
+    int right = 280;
+    int top = 80;
+    int bottom = 240;
+    
+    line( cdst, cv::Point(left,  top),    cv::Point(right, top),    Scalar(0,255,0), 1, CV_AA);
+    line( cdst, cv::Point(left,  bottom), cv::Point(right, bottom), Scalar(0,255,0), 1, CV_AA);
+    line( cdst, cv::Point(left,  top),    cv::Point(left,  bottom), Scalar(0,255,0), 1, CV_AA);
+    line( cdst, cv::Point(right, top),    cv::Point(right, bottom), Scalar(0,255,0), 1, CV_AA);
+    
+    BOOL canSeeLine[4];
+    
     for( size_t i = 0; i < lines.size(); i++ )
     {
         Vec4i l = lines[i];
-        line( cdst, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), Scalar(0,0,255), 1, CV_AA);
+        float angle = cvFastArctan(l[3] - l[1], l[2] - l[0]);
+        if (isAngleNear(angle, 0) || isAngleNear(angle, 180)) {
+            if (isLineNearY(l, top)) {
+                line( cdst, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), Scalar(0,0,255), 1, CV_AA);
+                canSeeLine[0] = YES;
+            } else if (isLineNearY(l, bottom)) {
+                line( cdst, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), Scalar(0,0,255), 1, CV_AA);
+                canSeeLine[1] = YES;
+            }
+        }
+        if (isAngleNear(angle, 90) || isAngleNear(angle, 270)) {
+            if (isLineNearX(l, left)) {
+                line( cdst, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), Scalar(255,0,0), 1, CV_AA);
+                canSeeLine[2] = YES;
+            } else if (isLineNearX(l, right)) {
+                line( cdst, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), Scalar(255,0,0), 1, CV_AA);
+                canSeeLine[3] = YES;
+            }
+        }
     }
+    
+    for (int i = 0; i < 4; i++) {
+        if (canSeeLine[i]) hasLines[i] = MIN(20, hasLines[i] + 1);
+        else hasLines[i] = MAX(0, hasLines[i] - 2);
+    }
+    
+    if (hasLines[0] > 14) line( cdst, cv::Point(left,  top),    cv::Point(right, top),    Scalar(0,255,0), 3, CV_AA);
+    if (hasLines[1] > 14) line( cdst, cv::Point(left,  bottom), cv::Point(right, bottom), Scalar(0,255,0), 3, CV_AA);
+    if (hasLines[2] > 14) line( cdst, cv::Point(left,  top),    cv::Point(left,  bottom), Scalar(0,255,0), 3, CV_AA);
+    if (hasLines[3] > 14) line( cdst, cv::Point(right, top),    cv::Point(right, bottom), Scalar(0,255,0), 3, CV_AA);
+    
+    BOOL isLookingAtCard = YES;
+    for (int i = 0; i < 4; i++) isLookingAtCard = isLookingAtCard && (hasLines[0] > 14);
+    
+    if (isLookingAtCard && cardView.image == nil) {
+        NSLog(@"Time to set a new image");
+        cv::Mat cardRaw;
+        cdst(cv::Rect(left, top, right - left, bottom - top)).copyTo(cardRaw);
+        UIImage *cardImage = [UIImage imageWithCVMat:cardRaw];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSLog(@"Setting new image!");
+            cardView.image = cardImage;
+            NSLog(@"Set new image successfully!");
+        });
+    }
+    
     image = cdst;
 }
 

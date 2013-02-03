@@ -12,11 +12,7 @@
                         <rect key="frame" x="0.0" y="20" width="320" height="548"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hWf-3Q-bWr" userLabel="Video Image View">
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="265" id="1cZ-en-NMV"/>
-                                </constraints>
-                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hWf-3Q-bWr" userLabel="Video Image View"/>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="U7H-Nj-Lrw" userLabel="Card Image View">
                                 <constraints>
                                     <constraint firstAttribute="height" constant="286" id="1Zk-zO-eZG"/>
@@ -58,6 +54,7 @@
                             <constraint firstItem="U7H-Nj-Lrw" firstAttribute="leading" secondItem="3" secondAttribute="leading" type="default" id="bvw-3Q-maY"/>
                             <constraint firstItem="U7H-Nj-Lrw" firstAttribute="bottom" secondItem="3" secondAttribute="bottom" type="default" id="dNJ-KU-aDM"/>
                             <constraint firstItem="hWf-3Q-bWr" firstAttribute="leading" secondItem="3" secondAttribute="leading" type="default" id="kSs-qg-Aas"/>
+                            <constraint firstItem="hWf-3Q-bWr" firstAttribute="bottom" secondItem="3" secondAttribute="bottom" type="default" id="l8U-VQ-Cyt"/>
                             <constraint firstItem="qta-hp-wEu" firstAttribute="leading" secondItem="fAY-qK-ZMl" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="or9-MF-1Cg"/>
                             <constraint firstItem="qta-hp-wEu" firstAttribute="baseline" secondItem="fAY-qK-ZMl" secondAttribute="baseline" type="default" id="w1O-M4-DiF"/>
                             <constraint firstItem="hWf-3Q-bWr" firstAttribute="top" secondItem="3" secondAttribute="top" type="default" id="wJj-x2-lyl"/>
