@@ -6,9 +6,8 @@
 //  Copyright (c) 2013 Sam Morrison. All rights reserved.
 //
 
-#import <opencv2/highgui/cap_ios.h>
-#import <Tesseract-wrapper/Tesseract.h>
 #import "SVViewController.h"
+#import <opencv2/highgui/cap_ios.h>
 #import "UIImage+OpenCV.h"
 
 @interface SVViewController () <CvVideoCameraDelegate>
