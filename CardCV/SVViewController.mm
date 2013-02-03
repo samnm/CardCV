@@ -98,6 +98,8 @@ BOOL isLineNearY(Vec4i line, int target) {
 
 - (void)processImage:(Mat&)image;
 {
+    double start = CFAbsoluteTimeGetCurrent();
+    
     Mat dst, cdst;
     Canny(image, dst, 50, 100, 3);
     cvtColor(dst, cdst, CV_GRAY2BGR);
@@ -156,18 +158,18 @@ BOOL isLineNearY(Vec4i line, int target) {
     for (int i = 0; i < 4; i++) isLookingAtCard = isLookingAtCard && (hasLines[0] > 14);
     
     if (isLookingAtCard && cardView.image == nil) {
-        NSLog(@"Time to set a new image");
         cv::Mat cardRaw;
         cdst(cv::Rect(left, top, right - left, bottom - top)).copyTo(cardRaw);
         UIImage *cardImage = [UIImage imageWithCVMat:cardRaw];
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSLog(@"Setting new image!");
             cardView.image = cardImage;
-            NSLog(@"Set new image successfully!");
         });
     }
     
     image = cdst;
+    
+    double duration = CFAbsoluteTimeGetCurrent() - start;
+    NSLog(@"%f (%.0f) fps", duration, 1.0 / duration);
 }
 
 #endif
