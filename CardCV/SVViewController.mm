@@ -105,8 +105,6 @@ BOOL isLineNearY(Vec4i line, int target) {
 
 - (void)processImage:(Mat&)image;
 {
-    double start = CFAbsoluteTimeGetCurrent();
-    
     Mat dst, cdst;
     Canny(image, dst, 50, 100, 3);
     cvtColor(dst, cdst, CV_GRAY2BGR);
@@ -175,9 +173,6 @@ BOOL isLineNearY(Vec4i line, int target) {
     }
     
     image = cdst;
-    
-    double duration = CFAbsoluteTimeGetCurrent() - start;
-//    NSLog(@"%f (%.0f) fps", duration, 1.0 / duration);
 }
 
 #endif
