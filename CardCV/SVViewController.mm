@@ -20,6 +20,7 @@
     
     CvVideoCamera* videoCamera;
     BOOL isCameraRunning;
+    BOOL hasResult;
     
     int hasLines[4];
 }
@@ -37,7 +38,7 @@
     videoCamera = [[CvVideoCamera alloc] initWithParentView:imageView];
     videoCamera.delegate = self;
     videoCamera.defaultAVCaptureDevicePosition = AVCaptureDevicePositionBack;
-    videoCamera.defaultAVCaptureSessionPreset = AVCaptureSessionPreset640x480;
+    videoCamera.defaultAVCaptureSessionPreset = AVCaptureSessionPreset1280x720;
     videoCamera.defaultAVCaptureVideoOrientation = AVCaptureVideoOrientationPortrait;
     videoCamera.defaultFPS = 15;
     videoCamera.grayscaleMode = NO;
@@ -64,6 +65,7 @@
 
 - (void)clearImage:(id)sender
 {
+    hasResult = NO;
     cardView.image = nil;
     outputText.hidden = YES;
     for (int i = 0; i < 4; i++) hasLines[i] = 0;
@@ -105,9 +107,11 @@ BOOL isLineNearY(Vec4i line, int target) {
 {
     if (!isCameraRunning) return;
     
+    float processingScale = 0.15;
+    
     cv::Size imageSize = image.size();
     Mat src;
-    cv::resize(image, src, cv::Size(imageSize.width * 0.25, imageSize.height * 0.25));
+    cv::resize(image, src, cv::Size(imageSize.width * processingScale, imageSize.height * processingScale));
     Mat dst, cdst;
     Canny(src, dst, 50, 100, 3);
     cvtColor(dst, cdst, CV_GRAY2BGR);
@@ -115,10 +119,13 @@ BOOL isLineNearY(Vec4i line, int target) {
     vector<Vec4i> lines;
     HoughLinesP(dst, lines, 1, CV_PI/180, 50, 50, 10 );
     
-    int left = 8;
-    int right = 110;
-    int top = 38;
-    int bottom = 100;
+    int imageWidth = videoCamera.imageHeight * processingScale;
+    
+    int boundSize = 3;
+    int left = boundSize;
+    int right = imageWidth - boundSize;
+    int top = imageWidth / 4;
+    int bottom = top + (right - left) * 0.63;
     
     line( cdst, cv::Point(left,  top),    cv::Point(right, top),    Scalar(0,255,0), 1, CV_AA);
     line( cdst, cv::Point(left,  bottom), cv::Point(right, bottom), Scalar(0,255,0), 1, CV_AA);
@@ -164,17 +171,16 @@ BOOL isLineNearY(Vec4i line, int target) {
     BOOL isLookingAtCard = YES;
     for (int i = 0; i < 4; i++) isLookingAtCard = isLookingAtCard && (hasLines[0] > 14);
     
-    if (isLookingAtCard && cardView.image == nil) {
-        cv::Mat cardRaw;
+    if (isLookingAtCard && !hasResult) {
+        hasResult = YES;
         cv::Mat cardOriginal;
-        cdst(cv::Rect(left, top, right - left, bottom - top)).copyTo(cardRaw);
-        image(cv::Rect(left * 4, top * 4, (right - left) * 4, (bottom - top) * 4)).copyTo(cardOriginal);
-        UIImage *cardImage = [UIImage imageWithCVMat:cardRaw];
+        image(cv::Rect(left / processingScale, top / processingScale, (right - left) / processingScale, (bottom - top) / processingScale)).copyTo(cardOriginal);
         UIImage *cardOriginalImage = [UIImage imageWithCVMat:cardOriginal];
         dispatch_async(dispatch_get_main_queue(), ^{
-            cardView.image = cardImage;
-            [self performOCR:cardOriginalImage];
+            outputText.text = @"Loading...";
+            outputText.hidden = NO;
         });
+        [self performOCR:cardOriginalImage];
     }
     
     image = cdst;
@@ -184,12 +190,11 @@ BOOL isLineNearY(Vec4i line, int target) {
 {
     Mat src = [image CVMat];
     Mat src_gray;
-    int thresh = 50;
     RNG rng(12345);
     
     // Convert image to gray and blur it
     cvtColor( src, src_gray, CV_BGR2GRAY );
-    blur( src_gray, src_gray, cv::Size(3,3) );
+    blur( src_gray, src_gray, cv::Size(2,2) );
     
     Mat canny_output;
     vector<vector<cv::Point> > contours;
@@ -197,32 +202,30 @@ BOOL isLineNearY(Vec4i line, int target) {
     vector<Vec4i> hierarchy;
     
     /// Detect edges using canny
-    Canny( src_gray, canny_output, thresh, thresh*3, 3 );
+    Canny( src_gray, canny_output, 50, 150, 3 );
     
-    /// Find contours
-    findContours( canny_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
+    int morph_size = 2;
+    Mat element = getStructuringElement( MORPH_ELLIPSE,
+                                        cv::Size( 2*morph_size + 1, 2*morph_size+1 ),
+                                        cv::Point( morph_size, morph_size ) );
+    /// Apply the dilation operation
+    morphologyEx(canny_output, canny_output, MORPH_CLOSE, element);
+    blur(canny_output, canny_output, cv::Size(2, 2));
+    morphologyEx(canny_output, canny_output, MORPH_CLOSE, element);
     
-    /// Draw contours
-    Mat drawing = Mat::zeros( canny_output.size(), CV_8UC3 );
-    for( int i = 0; i< contours.size(); i++ )
-    {
-        Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-        approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.02, true);
-        drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, cv::Point() );
-    }
-    
-    UIImage *drawingImage = [UIImage imageWithCVMat:drawing];
-    cardView.image = drawingImage;
+    UIImage *processedImage = [UIImage imageWithCVMat:canny_output];
     
     Tesseract *tesseract = [[Tesseract alloc] initWithDataPath:@"tessdata" language:@"eng"];
     [tesseract setVariableValue:@"0123456789" forKey:@"tessedit_char_whitelist"];
-    [tesseract setImage:drawingImage];
+    [tesseract setImage:processedImage];
     [tesseract recognize];
     
     NSString *result = [tesseract recognizedText];
-    outputText.text = result;
-    outputText.hidden = NO;
-    NSLog(@"%@", result);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        cardView.image = processedImage;
+        outputText.text = result;
+        outputText.hidden = NO;
+    });
 }
 
 #endif
