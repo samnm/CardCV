@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="2844" systemVersion="12C3006" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12C3006" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="2">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1930"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="2083"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -44,6 +44,14 @@
                                     <action selector="clearImage:" destination="2" eventType="touchUpInside" id="16X-zy-4fD"/>
                                 </connections>
                             </button>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WL3-cI-I88">
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="264" id="Oeq-04-U2h"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -51,10 +59,13 @@
                             <constraint firstItem="U7H-Nj-Lrw" firstAttribute="trailing" secondItem="3" secondAttribute="trailing" type="default" id="JZ4-Pl-C6K"/>
                             <constraint firstItem="hWf-3Q-bWr" firstAttribute="trailing" secondItem="3" secondAttribute="trailing" type="default" id="Lah-du-kzI"/>
                             <constraint firstAttribute="bottom" secondItem="fAY-qK-ZMl" secondAttribute="bottom" constant="12" id="Noa-5g-MB8"/>
+                            <constraint firstItem="WL3-cI-I88" firstAttribute="trailing" secondItem="3" secondAttribute="trailing" type="default" id="XoZ-2x-L96"/>
+                            <constraint firstItem="WL3-cI-I88" firstAttribute="leading" secondItem="3" secondAttribute="leading" type="default" id="bQa-GM-sVA"/>
                             <constraint firstItem="U7H-Nj-Lrw" firstAttribute="leading" secondItem="3" secondAttribute="leading" type="default" id="bvw-3Q-maY"/>
                             <constraint firstItem="U7H-Nj-Lrw" firstAttribute="bottom" secondItem="3" secondAttribute="bottom" type="default" id="dNJ-KU-aDM"/>
                             <constraint firstItem="hWf-3Q-bWr" firstAttribute="leading" secondItem="3" secondAttribute="leading" type="default" id="kSs-qg-Aas"/>
                             <constraint firstItem="hWf-3Q-bWr" firstAttribute="bottom" secondItem="3" secondAttribute="bottom" type="default" id="l8U-VQ-Cyt"/>
+                            <constraint firstItem="WL3-cI-I88" firstAttribute="top" secondItem="3" secondAttribute="top" type="default" id="lFu-ia-r8z"/>
                             <constraint firstItem="qta-hp-wEu" firstAttribute="leading" secondItem="fAY-qK-ZMl" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="or9-MF-1Cg"/>
                             <constraint firstItem="qta-hp-wEu" firstAttribute="baseline" secondItem="fAY-qK-ZMl" secondAttribute="baseline" type="default" id="w1O-M4-DiF"/>
                             <constraint firstItem="hWf-3Q-bWr" firstAttribute="top" secondItem="3" secondAttribute="top" type="default" id="wJj-x2-lyl"/>
@@ -64,6 +75,7 @@
                         <outlet property="button" destination="fAY-qK-ZMl" id="4Pr-oo-d6u"/>
                         <outlet property="cardView" destination="U7H-Nj-Lrw" id="3X9-O0-KuT"/>
                         <outlet property="imageView" destination="hWf-3Q-bWr" id="Qre-lM-iZk"/>
+                        <outlet property="outputText" destination="WL3-cI-I88" id="T1X-LN-pdY"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
@@ -82,6 +94,7 @@
                 <relationship kind="outlet" name="button" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="cardView" candidateClass="UIImageView"/>
                 <relationship kind="outlet" name="imageView" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="outputText" candidateClass="UITextView"/>
             </relationships>
         </class>
     </classes>

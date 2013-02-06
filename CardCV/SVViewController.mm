@@ -16,6 +16,7 @@
     IBOutlet UIImageView* imageView;
     IBOutlet UIImageView* cardView;
     IBOutlet UIButton* button;
+    IBOutlet UITextView* outputText;
     
     CvVideoCamera* videoCamera;
     BOOL isCameraRunning;
@@ -40,6 +41,8 @@
     videoCamera.defaultAVCaptureVideoOrientation = AVCaptureVideoOrientationPortrait;
     videoCamera.defaultFPS = 5;
     videoCamera.grayscaleMode = NO;
+    
+    outputText.hidden = YES;
 }
 
 - (void)didReceiveMemoryWarning
@@ -64,6 +67,7 @@
 - (void)clearImage:(id)sender
 {
     cardView.image = nil;
+    outputText.hidden = YES;
     for (int i = 0; i < 4; i++) hasLines[i] = 0;
 }
 
@@ -162,21 +166,18 @@ BOOL isLineNearY(Vec4i line, int target) {
     
     if (isLookingAtCard && cardView.image == nil) {
         cv::Mat cardRaw;
-        cv::Mat cardOriginal;
         cdst(cv::Rect(left, top, right - left, bottom - top)).copyTo(cardRaw);
-        image(cv::Rect(left, top, right - left, bottom - top)).copyTo(cardOriginal);
         UIImage *cardImage = [UIImage imageWithCVMat:cardRaw];
-        UIImage *cardOriginalImage = [UIImage imageWithCVMat:cardOriginal];
         dispatch_async(dispatch_get_main_queue(), ^{
             cardView.image = cardImage;
-            [self performOCR:cardOriginalImage];
+            [self performOCR:cardImage];
         });
     }
     
     image = cdst;
     
     double duration = CFAbsoluteTimeGetCurrent() - start;
-    NSLog(@"%f (%.0f) fps", duration, 1.0 / duration);
+//    NSLog(@"%f (%.0f) fps", duration, 1.0 / duration);
 }
 
 #endif
@@ -188,7 +189,10 @@ BOOL isLineNearY(Vec4i line, int target) {
     [tesseract setImage:image];
     [tesseract recognize];
     
-    NSLog(@"%@", [tesseract recognizedText]);
+    NSString *result = [tesseract recognizedText];
+    outputText.text = result;
+    outputText.hidden = NO;
+    NSLog(@"%@", result);
 }
 
 @end
