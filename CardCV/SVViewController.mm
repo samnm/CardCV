@@ -37,11 +37,11 @@
     videoCamera = [[CvVideoCamera alloc] initWithParentView:imageView];
     videoCamera.delegate = self;
     videoCamera.defaultAVCaptureDevicePosition = AVCaptureDevicePositionBack;
-    videoCamera.defaultAVCaptureSessionPreset = AVCaptureSessionPreset352x288;
+    videoCamera.defaultAVCaptureSessionPreset = AVCaptureSessionPreset640x480;
     videoCamera.defaultAVCaptureVideoOrientation = AVCaptureVideoOrientationPortrait;
-    videoCamera.defaultFPS = 5;
+    videoCamera.defaultFPS = 15;
     videoCamera.grayscaleMode = NO;
-    
+    [videoCamera start];
     outputText.hidden = YES;
 }
 
@@ -56,10 +56,8 @@
     isCameraRunning = !isCameraRunning;
     
     if (isCameraRunning) {
-        [videoCamera start];
         [button setTitle:@"Stop" forState:UIControlStateNormal];
     } else {
-        [videoCamera stop];
         [button setTitle:@"Start" forState:UIControlStateNormal];
     }
 }
@@ -105,18 +103,22 @@ BOOL isLineNearY(Vec4i line, int target) {
 
 - (void)processImage:(Mat&)image;
 {
+    if (!isCameraRunning) return;
+    
+    cv::Size imageSize = image.size();
+    Mat src;
+    cv::resize(image, src, cv::Size(imageSize.width * 0.25, imageSize.height * 0.25));
     Mat dst, cdst;
-    Canny(image, dst, 50, 100, 3);
+    Canny(src, dst, 50, 100, 3);
     cvtColor(dst, cdst, CV_GRAY2BGR);
     
     vector<Vec4i> lines;
-//  HoughLinesP(dst, lines, rho, theta, threshold, minLineLength=0, maxLineGap=0
     HoughLinesP(dst, lines, 1, CV_PI/180, 50, 50, 10 );
     
     int left = 8;
-    int right = 280;
-    int top = 80;
-    int bottom = 240;
+    int right = 110;
+    int top = 38;
+    int bottom = 100;
     
     line( cdst, cv::Point(left,  top),    cv::Point(right, top),    Scalar(0,255,0), 1, CV_AA);
     line( cdst, cv::Point(left,  bottom), cv::Point(right, bottom), Scalar(0,255,0), 1, CV_AA);
@@ -164,24 +166,57 @@ BOOL isLineNearY(Vec4i line, int target) {
     
     if (isLookingAtCard && cardView.image == nil) {
         cv::Mat cardRaw;
+        cv::Mat cardOriginal;
         cdst(cv::Rect(left, top, right - left, bottom - top)).copyTo(cardRaw);
+        image(cv::Rect(left * 4, top * 4, (right - left) * 4, (bottom - top) * 4)).copyTo(cardOriginal);
         UIImage *cardImage = [UIImage imageWithCVMat:cardRaw];
+        UIImage *cardOriginalImage = [UIImage imageWithCVMat:cardOriginal];
         dispatch_async(dispatch_get_main_queue(), ^{
             cardView.image = cardImage;
-            [self performOCR:cardImage];
+            [self performOCR:cardOriginalImage];
         });
     }
     
     image = cdst;
 }
 
-#endif
-
 - (void)performOCR:(UIImage *)image
 {
+    Mat src = [image CVMat];
+    Mat src_gray;
+    int thresh = 50;
+    RNG rng(12345);
+    
+    // Convert image to gray and blur it
+    cvtColor( src, src_gray, CV_BGR2GRAY );
+    blur( src_gray, src_gray, cv::Size(3,3) );
+    
+    Mat canny_output;
+    vector<vector<cv::Point> > contours;
+    vector<cv::Point> approx;
+    vector<Vec4i> hierarchy;
+    
+    /// Detect edges using canny
+    Canny( src_gray, canny_output, thresh, thresh*3, 3 );
+    
+    /// Find contours
+    findContours( canny_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
+    
+    /// Draw contours
+    Mat drawing = Mat::zeros( canny_output.size(), CV_8UC3 );
+    for( int i = 0; i< contours.size(); i++ )
+    {
+        Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+        approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.02, true);
+        drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, cv::Point() );
+    }
+    
+    UIImage *drawingImage = [UIImage imageWithCVMat:drawing];
+    cardView.image = drawingImage;
+    
     Tesseract *tesseract = [[Tesseract alloc] initWithDataPath:@"tessdata" language:@"eng"];
     [tesseract setVariableValue:@"0123456789" forKey:@"tessedit_char_whitelist"];
-    [tesseract setImage:image];
+    [tesseract setImage:drawingImage];
     [tesseract recognize];
     
     NSString *result = [tesseract recognizedText];
@@ -189,5 +224,7 @@ BOOL isLineNearY(Vec4i line, int target) {
     outputText.hidden = NO;
     NSLog(@"%@", result);
 }
+
+#endif
 
 @end
