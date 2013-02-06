@@ -9,6 +9,7 @@
 #import "SVViewController.h"
 #import <opencv2/highgui/cap_ios.h>
 #import "UIImage+OpenCV.h"
+#import "Tesseract.h"
 
 @interface SVViewController () <CvVideoCameraDelegate>
 {
@@ -21,6 +22,8 @@
     
     int hasLines[4];
 }
+
+- (void)performOCR:(UIImage *)image;
 
 @end
 
@@ -159,10 +162,14 @@ BOOL isLineNearY(Vec4i line, int target) {
     
     if (isLookingAtCard && cardView.image == nil) {
         cv::Mat cardRaw;
+        cv::Mat cardOriginal;
         cdst(cv::Rect(left, top, right - left, bottom - top)).copyTo(cardRaw);
+        image(cv::Rect(left, top, right - left, bottom - top)).copyTo(cardOriginal);
         UIImage *cardImage = [UIImage imageWithCVMat:cardRaw];
+        UIImage *cardOriginalImage = [UIImage imageWithCVMat:cardOriginal];
         dispatch_async(dispatch_get_main_queue(), ^{
             cardView.image = cardImage;
+            [self performOCR:cardOriginalImage];
         });
     }
     
@@ -173,5 +180,15 @@ BOOL isLineNearY(Vec4i line, int target) {
 }
 
 #endif
+
+- (void)performOCR:(UIImage *)image
+{
+    Tesseract *tesseract = [[Tesseract alloc] initWithDataPath:@"tessdata" language:@"eng"];
+    [tesseract setVariableValue:@"0123456789" forKey:@"tessedit_char_whitelist"];
+    [tesseract setImage:image];
+    [tesseract recognize];
+    
+    NSLog(@"%@", [tesseract recognizedText]);
+}
 
 @end
