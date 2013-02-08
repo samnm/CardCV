@@ -43,6 +43,19 @@
     videoCamera.defaultFPS = 15;
     videoCamera.grayscaleMode = NO;
     [videoCamera start];
+    
+    AVCaptureDevice *device = ((AVCaptureDeviceInput *)[[videoCamera.captureSession inputs] objectAtIndex:0]).device;
+    NSError *error;
+    if ([device isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus] && device.isFocusPointOfInterestSupported) {
+        if ([device lockForConfiguration:&error]) {
+            [device setFocusPointOfInterest:CGPointMake(0.75, 0.5)];
+            [device setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+            [device unlockForConfiguration];
+        } else {
+            NSLog(@"Error: %@", error);
+        }
+    }
+    
     outputText.hidden = YES;
 }
 
